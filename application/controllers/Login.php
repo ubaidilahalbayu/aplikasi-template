@@ -70,7 +70,7 @@ class Login extends CI_Controller {
 
 	$this->session->unset_userdata('user_data');
 
-	redirect('login');
+	redirect(base_url("login"));
 	}
 
     public function page_login()
