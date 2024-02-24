@@ -1,0 +1,87 @@
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.container {
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  text-align: center;
+  max-width: 400px; /* Sesuaikan lebar maksimum sesuai kebutuhan */
+}
+h2 {
+  margin-bottom: 20px;
+}
+input[type="text"]:hover,
+input[type="password"]:hover {
+  border-color: #6c757d; /* Warna border saat input diberi arahan kursor */
+}
+input[type="text"]:focus,
+input[type="password"]:focus {
+  border-color: #495057; /* Warna border saat input fokus */
+  box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25); /* Efek bayangan saat input fokus */
+}
+.btn {
+  color: white;
+  cursor: pointer;
+}
+
+.btn-google {
+  background-color: #dd4b39;
+}
+.btn-facebook {
+  background-color: #3b5998;
+}
+.btn-primary,
+.btn-google,
+.btn-facebook {
+  width: 100%;
+  transition: transform 0.3s ease;
+}
+.btn-primary:hover,
+.btn-google:hover,
+.btn-facebook:hover {
+  transform: scale(1.05); /* Mengubah ukuran tombol saat diarahkan kursor */
+  background-color: green;
+}
+
+.or-divider {
+  margin: 20px 0;
+  position: relative;
+}
+.or-divider::before,
+.or-divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 45%;
+  height: 1px;
+  background-color: #ccc;
+}
+.or-divider::before {
+  left: 0;
+}
+.or-divider::after {
+  right: 0;
+}
+.or-text {
+  display: inline-block;
+  background-color: #fff;
+  position: relative;
+  padding: 0 10px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.google-icon,
+.facebook-icon {
+  margin-right: 10px;
+}
