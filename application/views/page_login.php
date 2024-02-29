@@ -26,12 +26,15 @@
             <span class="or-text">Or</span>
         </div>
         <div class="mt-3">
-            <a href="<?= $login_button; ?>" class="btn btn-google my-2" onclick="loginWithGoogle()">
+            <a href="<?= $google_login; ?>" class="btn btn-google my-2" onclick="loginWithGoogle()">
                 <i class="fab fa-google google-icon"></i>Login with Google
             </a>
-            <button class="btn btn-facebook my-2" onclick="loginWithFacebook()">
+            <a href="<?= $facebook_login; ?> " class="btn btn-facebook my-2" onclick="loginWithFacebook()">
                 <i class="fab fa-facebook-f facebook-icon"></i>Login with Facebook
-            </button>
+            </a>
+            <!-- <a href="<?= $logoutURL ?> " class="btn btn-facebook my-2" onclick="loginWithFacebook()">
+                <i class="fab fa-facebook-f facebook-icon"></i>Logout with Facebook
+            </a> -->
         </div>
     </div>
 

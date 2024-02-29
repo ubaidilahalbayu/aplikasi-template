@@ -61,7 +61,7 @@
         <a href="#home">Home</a>
         <a href="#users">Users</a>
         <a href="#products">Products</a>
-        <a href="#settings">Settings</a>
+        <a href="<?= base_url("login/logout") ?>">Logout</a>
     </div>
 
     <div class="content" id="content">
