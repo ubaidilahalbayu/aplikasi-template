@@ -22,7 +22,7 @@ class User_Model extends CI_Model {
     public function checkUserWithProvider($data = array()){
         if(!empty($data)){
             //check whether user data already exists in database with same oauth info
-            $this->db->select($this->primaryKey, "is_block");
+            $this->db->select("".$this->primaryKey.", is_block");
             $this->db->from($this->tableName);
             $this->db->where(array('oauth_provider'=>$data['oauth_provider'], 'oauth_uid'=>$data['oauth_uid']));
             $prevQuery = $this->db->get();
