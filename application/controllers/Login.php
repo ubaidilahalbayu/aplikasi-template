@@ -26,13 +26,12 @@ class Login extends CI_Controller {
         $this->load->library(array('facebook', 'google')); 
          
         // Load user model 
-        // $this->load->model('user'); 
+        $this->load->model('user_Model'); 
     } 
 
 	public function index()
 	{
 		$userData = array();
-		$current_datetime = date('Y-m-d H:i:s');
         
 		if(isset($_GET["code"])){
 			// Authenticate user with facebook 
@@ -46,43 +45,45 @@ class Login extends CI_Controller {
 				$userData['first_name']    = !empty($fbUser['first_name'])?$fbUser['first_name']:''; 
 				$userData['last_name']    = !empty($fbUser['last_name'])?$fbUser['last_name']:''; 
 				$userData['email']        = !empty($fbUser['email'])?$fbUser['email']:''; 
-				$userData['gender']        = !empty($fbUser['gender'])?$fbUser['gender']:''; 
-				$userData['picture']    = !empty($fbUser['picture']['data']['url'])?$fbUser['picture']['data']['url']:''; 
-				$userData['link']        = !empty($fbUser['link'])?$fbUser['link']:'https://www.facebook.com/'; 
-				
-				// Insert or update user data to the database 
-				// $userID = $this->user->checkUser($userData); 
-				
-				// Check user data insert or update status 
-				// if(!empty($userID)){ 
-					$data['user_data'] = $userData; 
+		
+				// Store the user profile info into session
 					
-					// Store the user profile info into session
-					
-					$this->session->set_userdata('access_token',$this->facebook->is_authenticated());
-					$this->session->set_userdata('user_data', $userData); 
-				// }else{ 
-				//    $data['userData'] = array(); 
-				// } 
+				$this->session->set_userdata('access_token',$this->facebook->is_authenticated());
 				
 				// Facebook logout URL 
-				$data['logoutURL'] = $this->facebook->logout_url(); 
-			}else{ 
-				// Facebook authentication url
-				$userData = $this->google->get_user_data($_GET['code']);
-				$user_data = array(
-					'first_name' => !empty($userData['given_name'])?$userData['given_name']:'',
-					'last_name'  => !empty($userData['family_name'])?$userData['family_name']:'',
-					'email_address' => !empty($userData['email'])?$userData['email']:'',
-					'profile_picture'=> !empty($userData['picture'])?$userData['picture']:'',
-					'updated_at' => $current_datetime
+				$data['logoutURL'] = $this->facebook->logout_url();
+			}else{
+
+				$user_data = $this->google->get_user_data($_GET['code']);
+				$userData = array(
+					'oauth_provider' => 'google',
+					'oauth_uid' => !empty($user_data['id'])?$user_data['id']:'',
+					'first_name' => !empty($user_data['given_name'])?$user_data['given_name']:'',
+					'last_name'  => !empty($user_data['family_name'])?$user_data['family_name']:'',
+					'email' => !empty($user_data['email'])?$user_data['email']:''
 					);
-				$this->session->set_userdata('access_token', $userData['access_token']);
-				$this->session->set_userdata('user_data', $user_data);
+				$this->session->set_userdata('access_token', $user_data['access_token']);
+			}
+			// Insert or update user data to the database 
+			$userID = $this->user_Model->checkUserWithProvider($userData); 
+			
+			// Check user data insert or update status 
+			if($userID>0){ 
+				$this->session->set_userdata('user_data', $userData);
+			}elseif ($userID<0) {
+				$data['error'] = array(
+					'code' => '001',
+					'message' => "Akun Di Blokir untuk Saar ini Silahkan hubungi CS"
+				);
+			}else{
+				$data['error'] = array(
+					'code' => '999',
+					'message' => "Error Database"
+				);
 			}
 		}
 
-		if(!$this->session->userdata('access_token')){
+		if(!$this->session->userdata('access_token')&&!$this->session->userdata('user_data')){
             $data['facebook_login'] =  $this->facebook->login_url();
 			$data['google_login'] = $this->google->get_login_url();//'"><img src="https://1.bp.blogspot.com/-gvncBD5VwqU/YEnYxS5Ht7I/AAAAAAAAAXU/fsSRah1rL9s3MXM1xv8V471cVOsQRJQlQCLcBGAsYHQ/s320/google_logo.png" /></a>';
 			$this->load->view('page_login', $data);
@@ -101,6 +102,7 @@ class Login extends CI_Controller {
 		
         // Remove local Facebook session 
         $this->facebook->destroy_session();
+		// Remove local google session 
         $this->google->destroy_session();
 		$this->session->unset_userdata('access_token');
 

@@ -11,6 +11,23 @@
     <link rel="stylesheet" href="<?= base_url(); ?>/assets/css/loginstyles.css">
 </head>
 <body>
+    <?php
+    if (isset($error)) {
+    ?>
+        <script type="text/javascript">
+            alert(
+                <?php
+                if ($error['code']=="999") {
+                    echo "<p><b>ERROR Code: 999;</b></p><p><b>Status: Fatal;</b></p><p>Message: ".$error['message'].";</p>";
+                }else{
+                    echo $error['message'];
+                }
+                ?>
+            );
+        </script>
+    <?php
+    }
+    ?>
     <div class="container mx-auto">
         <h2>Login</h2>
         <form action="/login" method="post">
