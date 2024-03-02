@@ -22,7 +22,7 @@ class Login extends CI_Controller {
 	function __construct() { 
         parent::__construct(); 
          
-        // Load facebook oauth library 
+        // Load facebook, google oauth library 
         $this->load->library(array('facebook', 'google')); 
          
         // Load user model 
@@ -65,25 +65,45 @@ class Login extends CI_Controller {
 				$this->session->set_userdata('access_token', $user_data['access_token']);
 			}
 			// Insert or update user data to the database 
-			$userID = $this->user_Model->checkUserWithProvider($userData); 
-			
+			$userID = $this->user_Model->checkUserWithProvider($userData);
 			// Check user data insert or update status 
-			if($userID>0){ 
+			if($userID>0){
+				$userData = $this->user_Model->get_user_where(array("id_user" => $userID));
 				$this->session->set_userdata('user_data', $userData);
 			}elseif ($userID<0) {
-				$data['error'] = array(
-					'code' => '001',
+				$alert = array(
+					'code' => '002', //KODE PERINGATAN
 					'message' => "Akun Di Blokir untuk Saar ini Silahkan hubungi CS"
 				);
 			}else{
-				$data['error'] = array(
-					'code' => '999',
+				$alert = array(
+					'code' => '999', //KODE FATAL SISTEM
 					'message' => "Error Database"
 				);
 			}
 		}
 
-		if(!$this->session->userdata('access_token')&&!$this->session->userdata('user_data')){
+		if ($_POST) {
+			$username = !empty($_POST["username"])?$_POST["username"]:'';
+			$password = !empty($_POST["password"])?md5($_POST["password"]):'';
+
+			$checkUserPass = $this->user_Model->checkUser($username, $password);
+			$alert = array(
+				'code' => '001', //KODE SALAH ATAU GAGAL
+				'message' => "Username atau Password tidak benar!!"
+			);
+			if ($checkUserPass) {
+				unset($alert);
+				$userData = $this->user_Model->get_user_where(array("email" => $username));
+				$this->session->set_userdata('access_token', '01');
+				$this->session->set_userdata('user_data', $userData);
+			}
+		}
+		if (isset($alert)) {
+			$this->session->set_flashdata('alert', $alert);
+		}
+
+		if(!$this->session->userdata('access_token')||!$this->session->userdata('user_data')){
             $data['facebook_login'] =  $this->facebook->login_url();
 			$data['google_login'] = $this->google->get_login_url();//'"><img src="https://1.bp.blogspot.com/-gvncBD5VwqU/YEnYxS5Ht7I/AAAAAAAAAXU/fsSRah1rL9s3MXM1xv8V471cVOsQRJQlQCLcBGAsYHQ/s320/google_logo.png" /></a>';
 			$this->load->view('page_login', $data);
@@ -93,13 +113,19 @@ class Login extends CI_Controller {
 			// echo json_encode($this->session->userdata('access_token'));
 			// echo json_encode($this->session->userdata('user_data'));
 			// echo "Login success";
-			redirect(base_url('MyApplication/dashboard'));
+			redirect(base_url('MyApplication/dashboard')); 	
 		}
 	}
 
 	public function logout()
 	{
-		
+		if ($this->session->userdata('access_token')&&$this->session->userdata('user_data')) {
+			$alert = array(
+				"code" => '003',// KODE BERHASIL ATAU BENAR
+				"message" => "Berhasil Logout"
+			);
+		}
+		$this->session->set_flashdata('alert', $alert);
         // Remove local Facebook session 
         $this->facebook->destroy_session();
 		// Remove local google session 

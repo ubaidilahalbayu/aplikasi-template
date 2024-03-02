@@ -12,15 +12,16 @@
 </head>
 <body>
     <?php
-    if (isset($error)) {
+    if ($this->session->flashdata('alert')) {
+        $alert = $this->session->flashdata('alert');
     ?>
         <script type="text/javascript">
             alert(
                 <?php
-                if ($error['code']=="999") {
-                    echo "<p><b>ERROR Code: 999;</b></p><p><b>Status: Fatal;</b></p><p>Message: ".$error['message'].";</p>";
+                if ($alert['code']=="999") {
+                    echo "'<p><b>ERROR Code: 999;</b></p><p><b>Status: Fatal;</b></p><p>Message: ".$alert['message'].";</p>'";
                 }else{
-                    echo $error['message'];
+                    echo "'".$alert['message']."'";
                 }
                 ?>
             );
@@ -30,7 +31,7 @@
     ?>
     <div class="container mx-auto">
         <h2>Login</h2>
-        <form action="/login" method="post">
+        <form action="<?= base_url('login') ?>" method="post">
             <div class="mb-3">
                 <input type="text" class="form-control" name="username" placeholder="Username" required>
             </div>

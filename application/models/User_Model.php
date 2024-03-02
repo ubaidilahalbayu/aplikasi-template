@@ -56,10 +56,10 @@ class User_Model extends CI_Model {
     }
 
     public function get_users(){
-        return $this->db->get($this->tableName);
+        return $this->db->get($this->tableName)->result_array();
     }
     public function get_user_where($whereData = array()){
-        return $this->db->get_where($this->tableName, $whereData);
+        return $this->db->get_where($this->tableName, $whereData)->result_array();
     }
     public function input_user($data){
         $this->db->insert($this->tableName, $data);

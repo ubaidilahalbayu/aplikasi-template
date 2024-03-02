@@ -18,8 +18,39 @@ class MyApplication extends CI_Controller {
 	 * map to /index.php/welcome/<method_name>
 	 * @see https://codeigniter.com/userguide3/general/urls.html
 	 */
+	private $userData;
+
+	function __construct() { 
+        parent::__construct(); 
+         
+        // Load model 
+        $this->load->model('user_Model');
+
+		//check session
+		if (!$this->session->userdata('access_token')||!$this->session->userdata('user_data')) {
+			$alert = array(
+				"code" => '002', //KODE PERINGATAN
+				"message" => "Silahkan Login!"
+			);
+			$this->session->set_flashdata('alert', $alert);
+			redirect(base_url());
+		}else{
+			$this->userData = $this->session->userdata('user_data')[0];
+		}
+    }
 	public function dashboard()
 	{
 		$this->load->view('dashboard');
+	}
+	public function users(){
+		// echo json_encode($this->userData);
+		if (!$this->userData['is_admin']) {
+			$alert = array(
+				"code" => '002', //KODE PERINGATAN
+				"message" => "Anda bukan Admin!"
+			);
+			$this->session->set_flashdata('alert', $alert);
+			redirect(base_url("MyApplication/dashboard"));
+		}
 	}
 }
