@@ -27,20 +27,28 @@ class MyApplication extends CI_Controller {
         $this->load->model('user_Model');
 
 		//check session
-		if (!$this->session->userdata('access_token')||!$this->session->userdata('user_data')) {
-			$alert = array(
-				"code" => '002', //KODE PERINGATAN
-				"message" => "Silahkan Login!"
-			);
-			$this->session->set_flashdata('alert', $alert);
-			redirect(base_url());
-		}else{
-			$this->userData = $this->session->userdata('user_data')[0];
-		}
+		// if (!$this->session->userdata('access_token')||!$this->session->userdata('user_data')) {
+		// 	$alert = array(
+		// 		"code" => '002', //KODE PERINGATAN
+		// 		"message" => "Silahkan Login!"
+		// 	);
+		// 	$this->session->set_flashdata('alert', $alert);
+		// 	redirect(base_url());
+		// }else{
+		// 	$this->userData = $this->session->userdata('user_data')[0];
+		// }
     }
 	public function dashboard()
 	{
+		$this->load->view('template/header');
 		$this->load->view('dashboard');
+		$this->load->view('template/footer');
+	}
+	public function pokemon()
+	{
+		$this->load->view('template/header');
+		$this->load->view('pokemon');
+		$this->load->view('template/footer');
 	}
 	public function users(){
 		// echo json_encode($this->userData);
