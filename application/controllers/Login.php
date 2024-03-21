@@ -23,7 +23,7 @@ class Login extends CI_Controller {
         parent::__construct(); 
          
         // Load facebook, google oauth library 
-        $this->load->library(array('facebook', 'google')); 
+        $this->load->library(array('facebook', 'google', 'Authorization_Token'));
          
         // Load user model 
         $this->load->model('user_Model'); 
@@ -48,7 +48,7 @@ class Login extends CI_Controller {
 		
 				// Store the user profile info into session
 					
-				$this->session->set_userdata('access_token',$this->facebook->is_authenticated());
+				$this->session->set_userdata('access_token_oauth',$this->facebook->is_authenticated());
 				
 				// Facebook logout URL 
 				$data['logoutURL'] = $this->facebook->logout_url();
@@ -62,14 +62,15 @@ class Login extends CI_Controller {
 					'last_name'  => !empty($user_data['family_name'])?$user_data['family_name']:'',
 					'email' => !empty($user_data['email'])?$user_data['email']:''
 					);
-				$this->session->set_userdata('access_token', $user_data['access_token']);
+				$this->session->set_userdata('access_token_oauth', $user_data['access_token']);
 			}
 			// Insert or update user data to the database 
 			$userID = $this->user_Model->checkUserWithProvider($userData);
 			// Check user data insert or update status 
 			if($userID>0){
 				$userData = $this->user_Model->get_user_where(array("id_user" => $userID));
-				$this->session->set_userdata('user_data', $userData);
+				$userData = $this->authorization_token->generateToken($userData);
+				$this->session->set_userdata('access_token', $userData);
 			}elseif ($userID<0) {
 				$alert = array(
 					'code' => '002', //KODE PERINGATAN
@@ -95,23 +96,24 @@ class Login extends CI_Controller {
 			if ($checkUserPass) {
 				unset($alert);
 				$userData = $this->user_Model->get_user_where(array("email" => $username));
-				$this->session->set_userdata('access_token', '01');
-				$this->session->set_userdata('user_data', $userData);
+				$userData = $this->authorization_token->generateToken($userData);
+				$this->session->set_userdata('access_token_oauth', '01');
+				$this->session->set_userdata('access_token', $userData);
 			}
 		}
 		if (isset($alert)) {
 			$this->session->set_flashdata('alert', $alert);
 		}
 
-		if(!$this->session->userdata('access_token')||!$this->session->userdata('user_data')){
+		if(!$this->session->userdata('access_token_oauth')||!$this->session->userdata('access_token')){
             $data['facebook_login'] =  $this->facebook->login_url();
 			$data['google_login'] = $this->google->get_login_url();//'"><img src="https://1.bp.blogspot.com/-gvncBD5VwqU/YEnYxS5Ht7I/AAAAAAAAAXU/fsSRah1rL9s3MXM1xv8V471cVOsQRJQlQCLcBGAsYHQ/s320/google_logo.png" /></a>';
 			$this->load->view('page_login', $data);
 		}
 		else{
 			// uncomentar kode dibawah untuk melihat data session email
+			// echo json_encode($this->session->userdata('access_token_oauth'));
 			// echo json_encode($this->session->userdata('access_token'));
-			// echo json_encode($this->session->userdata('user_data'));
 			// echo "Login success";
 			redirect(base_url('MyApplication/dashboard')); 	
 		}
@@ -119,20 +121,20 @@ class Login extends CI_Controller {
 
 	public function logout()
 	{
-		if ($this->session->userdata('access_token')&&$this->session->userdata('user_data')) {
-			$alert = array(
-				"code" => '003',// KODE BERHASIL ATAU BENAR
-				"message" => "Berhasil Logout"
-			);
-		}
+		// if ($this->session->userdata('access_token_oauth')&&$this->session->userdata('access_token')) {
+		// 	$alert = array(
+		// 		"code" => '003',// KODE BERHASIL ATAU BENAR
+		// 		"message" => "Berhasil Logout"
+		// 	);
+		// }
 		$this->session->set_flashdata('alert', $alert);
         // Remove local Facebook session 
         $this->facebook->destroy_session();
 		// Remove local google session 
         $this->google->destroy_session();
-		$this->session->unset_userdata('access_token');
+		$this->session->unset_userdata('access_token_oauth');
 
-		$this->session->unset_userdata('user_data');
+		$this->session->unset_userdata('access_token');
 
 		redirect(base_url("login"));
 	}

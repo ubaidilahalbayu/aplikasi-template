@@ -74,7 +74,9 @@ class User_Model extends CI_Model {
         return $this->db->delete($this->tableName, $whereData);
     }
     public function delete_all(){
-        return $this->db->empty_table($this->tableName);
+        $ALL_Del = $this->db->empty_table($this->tableName);
+        $query = $this->db->query("ALTER TABLE ".$this->tableName." AUTO_INCREMENT = 1");
+        return $ALL_Del;
     }
     
 }

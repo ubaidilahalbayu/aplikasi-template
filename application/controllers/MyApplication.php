@@ -25,23 +25,38 @@ class MyApplication extends CI_Controller {
          
         // Load model 
         $this->load->model('user_Model');
+        $this->load->library('Authorization_Token');
 
 		//check session
-		// if (!$this->session->userdata('access_token')||!$this->session->userdata('user_data')) {
-		// 	$alert = array(
-		// 		"code" => '002', //KODE PERINGATAN
-		// 		"message" => "Silahkan Login!"
-		// 	);
-		// 	$this->session->set_flashdata('alert', $alert);
-		// 	redirect(base_url());
-		// }else{
-		// 	$this->userData = $this->session->userdata('user_data')[0];
-		// }
+		if (!$this->session->userdata('access_token_oauth')||!$this->session->userdata('access_token')) {
+			$alert = array(
+				"code" => '002', //KODE PERINGATAN
+				"message" => "Silahkan Login!"
+			);
+			$this->session->set_flashdata('alert', $alert);
+			redirect(base_url());
+		}else{
+			$decodedToken = $this->authorization_token->validateToken($this->session->userdata('access_token'));
+            if ($decodedToken['status'])
+            {
+                $this->userData = $decodedToken['data'];
+            }
+            else {
+                $alert = array(
+					"code" => '002', //KODE PERINGATAN
+					"message" => "Your Session end!"
+				);
+				$this->session->set_flashdata('alert', $alert);
+				redirect(base_url('login/logout'));
+            }
+		}
     }
 	public function dashboard()
 	{
+		echo json_encode($this->userData);
+		$data['userData'] = $this->userData->{0};
 		$this->load->view('template/header');
-		$this->load->view('dashboard');
+		$this->load->view('dashboard', $data);
 		$this->load->view('template/footer');
 	}
 	public function pokemon()
@@ -51,8 +66,7 @@ class MyApplication extends CI_Controller {
 		$this->load->view('template/footer');
 	}
 	public function users(){
-		// echo json_encode($this->userData);
-		if (!$this->userData['is_admin']) {
+		if (!$this->userData->{0}->is_admin) {
 			$alert = array(
 				"code" => '002', //KODE PERINGATAN
 				"message" => "Anda bukan Admin!"

@@ -85,6 +85,14 @@
         <a id="href_dash" href="<?= base_url("MyApplication/dashboard"); ?>">Dashboard</a>
         <a id="href_poke" href="<?= base_url("MyApplication/pokemon"); ?>">Pokemon</a>
         <a id="href_user" href="<?= base_url("MyApplication/users"); ?>">Users</a>
+        <a class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            Aplikasi Kasir
+        </a>
+        <ul class="dropdown-menu dropdown-menu-dark">
+            <li><a class="dropdown-item" href="#">Home</a></li>
+            <li><a class="dropdown-item" href="#">Kasir</a></li>
+            <li><a class="dropdown-item" href="#">Riwayat</a></li>
+        </ul>
         <a href="<?= base_url("login/logout") ?>">Logout</a>
     </div>
     <div class="content" id="content">

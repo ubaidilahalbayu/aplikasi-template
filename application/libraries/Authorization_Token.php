@@ -85,12 +85,15 @@ class Authorization_Token
      * Validate Token with Header
      * @return : user informations
      */
-    public function validateToken()
+    public function validateToken($tok = null)
     {
         /**
          * Request All Headers
          */
         $headers = $this->CI->input->request_headers();
+        if ($tok) {
+            $headers['authorization'] = $tok;
+        }
         
         /**
          * Authorization Header Exists

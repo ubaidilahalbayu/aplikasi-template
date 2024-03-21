@@ -10,7 +10,7 @@
             <th>Weight</th>
         </tr>
     </thead>
-</table>
+</table>u
 <script type="text/javascript">
     $(document).ready(function (){
         var table = new DataTable('#myTable', {
