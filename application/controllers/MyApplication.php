@@ -53,7 +53,6 @@ class MyApplication extends CI_Controller {
     }
 	public function dashboard()
 	{
-		echo json_encode($this->userData);
 		$data['userData'] = $this->userData->{0};
 		$this->load->view('template/header');
 		$this->load->view('dashboard', $data);
@@ -65,7 +64,8 @@ class MyApplication extends CI_Controller {
 		$this->load->view('pokemon');
 		$this->load->view('template/footer');
 	}
-	public function users(){
+	public function users()
+	{
 		if (!$this->userData->{0}->is_admin) {
 			$alert = array(
 				"code" => '002', //KODE PERINGATAN
@@ -74,5 +74,8 @@ class MyApplication extends CI_Controller {
 			$this->session->set_flashdata('alert', $alert);
 			redirect(base_url("MyApplication/dashboard"));
 		}
+		$this->load->view('template/header');
+		$this->load->view('users');
+		$this->load->view('template/footer');
 	}
 }
